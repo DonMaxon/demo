@@ -48,7 +48,7 @@ public class WebController {
     }
 
     @GetMapping("/list_of_games")
-    public String newPlayer(Model model){
+    public String allGames(Model model){
         Player player = (Player)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         model.addAttribute("player", player);
         return "list_of_games";
