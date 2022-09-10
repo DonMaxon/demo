@@ -65,20 +65,16 @@
 <body class="text-center">
 
 <main class="form-signin">
-    <form th:object="${player}" th:action="@{/sign_up}" method="post" role="form">
+    <form th:object="${value}" th:action="@{/game}" method="post" role="form">
 
-        <h1 class="h3 mb-3 fw-normal">Please sign up</h1>
+        <h1 class="h3 mb-3 fw-normal">Please enter your number</h1>
 
         <div class="form-floating">
-            <input type="name" class = "form-control" name="login" id="floatingInput" placeholder="Username" required="required" th:field="*{login}">
-            <label for="floatingInput">Login</label>
-        </div>
-        <div class="form-floating">
-            <input type="password" class = "form-control" id="floatingPassword" name="password"  placeholder="Password" required="required" th:field="*{password}">
-            <label for="floatingPassword">Password</label>
+            <input type="number" class = "form-control" id="floatingPassword" name="number"  placeholder="Password" required="required" th:value="${value.value}" th:field="*{value}">
+            <label for="floatingPassword">Number</label>
         </div>
         <br>
-        <button class="w-100 btn btn-lg btn-primary" type="submit">Sign up</button>
+        <button class="w-100 btn btn-lg btn-primary" type="submit">Enter</button>
     </form>
 </main>
 </body>

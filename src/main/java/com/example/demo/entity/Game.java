@@ -30,6 +30,15 @@ public class Game {
     public Game() {
     }
 
+    public Game(int hiddenNumber, int attemptsNumber, int cowsNumber, int bullsNumber, Player player) {
+        this.id=UUID.randomUUID();
+        this.hiddenNumber = hiddenNumber;
+        this.attemptsNumber = attemptsNumber;
+        this.cowsNumber = cowsNumber;
+        this.bullsNumber = bullsNumber;
+        this.player = player;
+    }
+
     public Game(UUID id, int hiddenNumber, int attemptsNumber, int cowsNumber,
                 int bullsNumber, Player player) {
         this.id = id;

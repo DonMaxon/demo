@@ -20,7 +20,10 @@ public class Player implements UserDetails, CredentialsContainer {
     @Column(nullable = false)
     private String password;
 
-    @OneToMany(mappedBy = "player",  cascade = CascadeType.ALL)
+    @Column(nullable = false)
+    private double rating;
+
+    @OneToMany(mappedBy = "player",  cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Game> games;
 
     public Player() {
@@ -30,6 +33,7 @@ public class Player implements UserDetails, CredentialsContainer {
     public Player(UUID id) {
         this.id = id;
         games = new ArrayList<>();
+        rating = Double.POSITIVE_INFINITY;
     }
 
     public Player(UUID id, String login, String password, List<Game> games) {
@@ -37,6 +41,7 @@ public class Player implements UserDetails, CredentialsContainer {
         this.login = login;
         this.password = password;
         this.games = games;
+        rating = Double.POSITIVE_INFINITY;
     }
 
     public UUID getId() {
@@ -53,6 +58,14 @@ public class Player implements UserDetails, CredentialsContainer {
 
     public void setLogin(String login) {
         this.login = login;
+    }
+
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
     }
 
     @Override
