@@ -10,7 +10,7 @@
     <h2>Games</h2>
 
     <div class="table-responsive" th:fragment="table_attributes">
-        <a class="btn btn-success" th:href="@{/new_game(player=${player.id})}">New game</a>
+        <a class="btn btn-success" th:href="@{/new_game(player=${player.id})}">Play</a>
         <a class="btn btn-success" th:href="@{/rating(player=${player.id})}">Rating</a>
         <table class="table table-striped table-sm">
             <thead>
@@ -22,7 +22,8 @@
             <tbody>
             <tr th:each="game: ${player.games}">
                 <td th:utext="${game.attemptsNumber}">Number of attemts</td>
-                <td th:utext="${game.hiddenNumber}">Hidden number</td>
+                <td th:if="${game.bullsNumber==4}"><a th:utext="${game.hiddenNumber}">Hidden number</a></td>
+                <td th:if="${game.bullsNumber!=4}">Game isn't ended:)</td>
             </tr>
             </tbody>
         </table>

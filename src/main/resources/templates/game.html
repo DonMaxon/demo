@@ -65,10 +65,11 @@
 <body class="text-center">
 
 <main class="form-signin">
-    <form th:object="${value}" th:action="@{/game}" method="post" role="form">
+    <form th:object="${value}" th:action="@{/game(player=${player.id})}" method="post" role="form">
 
         <h1 class="h3 mb-3 fw-normal">Please enter your number</h1>
-
+        <h2 class="h5 mb-3 fw-normal">Number of bulls: <span th:text="${game.bullsNumber}"></span></h2>
+        <h2 class="h5 mb-3 fw-normal">Number of cows: <span th:text="${game.cowsNumber}"></span></h2>
         <div class="form-floating">
             <input type="number" class = "form-control" id="floatingPassword" name="number"  placeholder="Password" required="required" th:value="${value.value}" th:field="*{value}">
             <label for="floatingPassword">Number</label>

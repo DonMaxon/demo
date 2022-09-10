@@ -140,4 +140,21 @@ public class Player implements UserDetails, CredentialsContainer {
     public int hashCode() {
         return Objects.hash(id, login, password, games);
     }
+
+    public double newScore(){
+        double numOfAttempts = 0;
+        for (int i =0; i< games.size(); ++i){
+            numOfAttempts+=games.get(i).getAttemptsNumber();
+        }
+        return numOfAttempts/games.size();
+    }
+
+    public Game findNotEndedGame(){
+        for (int i =0; i < games.size(); ++i){
+            if (games.get(i).getBullsNumber()!=4){
+                return games.get(i);
+            }
+        }
+        return null;
+    }
 }

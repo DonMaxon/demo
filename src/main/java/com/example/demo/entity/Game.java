@@ -1,6 +1,10 @@
 package com.example.demo.entity;
 
+import org.springframework.data.util.Pair;
+
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -30,9 +34,9 @@ public class Game {
     public Game() {
     }
 
-    public Game(int hiddenNumber, int attemptsNumber, int cowsNumber, int bullsNumber, Player player) {
+    public Game(int attemptsNumber, int cowsNumber, int bullsNumber, Player player) {
         this.id=UUID.randomUUID();
-        this.hiddenNumber = hiddenNumber;
+        this.hiddenNumber = generateHiddenNumber();
         this.attemptsNumber = attemptsNumber;
         this.cowsNumber = cowsNumber;
         this.bullsNumber = bullsNumber;
@@ -124,5 +128,39 @@ public class Game {
     @Override
     public int hashCode() {
         return Objects.hash(id, hiddenNumber, attemptsNumber, cowsNumber, bullsNumber, player);
+    }
+
+    private int generateHiddenNumber(){
+        Integer[] arrayForNumbers=new Integer[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+        ArrayList<Integer> arrayOfNumbers = new ArrayList(Arrays.asList(arrayForNumbers));
+        int result = 0;
+        int index = 1+(int)(Math.random()*((9-1)+1));
+        result=arrayOfNumbers.get(index);
+        arrayOfNumbers.remove(index);
+        for (int i =0; i < 3; ++i) {
+            index = (int) (Math.random() * (9-i));
+            result=result*10+arrayOfNumbers.get(index);
+            arrayOfNumbers.remove(index);
+        }
+        return result;
+    }
+
+    public Pair<Integer, Integer> compareAnswerWithResult(int result, int answer){
+        String res = Integer.toString(result);
+        String ans = Integer.toString(answer);
+        Integer bulls = 0;
+        Integer cows = 0;
+        for (int i =0; i < 4; ++i){
+            if (res.indexOf(ans.charAt(i))!=-1){
+                cows++;
+            }
+        }
+        for (int i =0; i < 4; ++i){
+            if (res.charAt(i)==ans.charAt(i)){
+                cows--;
+                bulls++;
+            }
+        }
+        return Pair.of(bulls, cows);
     }
 }

@@ -5,6 +5,7 @@ import com.example.demo.entity.Player;
 import com.example.demo.services.GameService;
 import com.example.demo.services.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.thymeleaf.util.ArrayUtils;
 
 
 import java.util.*;
@@ -65,39 +65,53 @@ public class WebController {
     }
 
     @GetMapping("/new_game")
+    //TODO: swap hidden num in game
     public String newGame(@RequestParam("player") UUID uuid, Model model){
         Player player = playerService.findById(uuid);
         model.addAttribute("player", player);
         MutableInt value = new MutableInt();
         model.addAttribute("value", value);
-        Game game = new Game(getHiddenNumber(), 0, 0, 0, playerService.findById(uuid));
+        Game game = player.findNotEndedGame();
+        if (game == null) {
+            game = new Game(UUID.randomUUID(), 7328, 0, 0, 0, playerService.findById(uuid));
+            //Game game = new Game(0, 0, 0, playerService.findById(uuid));
+            gameService.save(game);
+        }
         model.addAttribute("game", game);
         return "game";
     }
 
-    @PostMapping("/new_game")
-    public String game(@RequestParam("player") UUID uuid, Model model){
+    @PostMapping("/game")
+    public String game(@RequestParam("player") UUID uuid,
+                       @ModelAttribute MutableInt value,  Model model){
         Player player = playerService.findById(uuid);
+        Game game = player.findNotEndedGame();
         model.addAttribute("player", player);
-        MutableInt value = new MutableInt();
+        game.setAttemptsNumber(game.getAttemptsNumber()+1);
+        if (value.getValue()==game.getHiddenNumber()){
+            game.setBullsNumber(4);
+            game.setCowsNumber(0);
+            gameService.save(game);
+            player.setRating(player.newScore());
+            playerService.save(player);
+            return "game_over";
+        }
+        else{
+            if (value.value>999 && value.value<10000) {
+                gameService.save(game);
+                Pair<Integer, Integer> numOfBullsAndCows = game.compareAnswerWithResult(game.getHiddenNumber(), value.value);
+                game.setCowsNumber(numOfBullsAndCows.getSecond());
+                game.setBullsNumber(numOfBullsAndCows.getFirst());
+            }
+            model.addAttribute("game", game);
+            model.addAttribute("player", player);
+            model.addAttribute("value", value);
+        }
         model.addAttribute("value", value);
         return "game";
     }
 
-    private int getHiddenNumber(){
-        Integer[] arrayForNumbers=new Integer[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-        ArrayList<Integer> arrayOfNumbers = new ArrayList(Arrays.asList(arrayForNumbers));
-        int result = 0;
-        int index = 1+(int)(Math.random()*((9-1)+1));
-        result=arrayOfNumbers.get(index);
-        arrayOfNumbers.remove(index);
-        for (int i =0; i < 3; ++i) {
-            index = (int) (Math.random() * (9-i));
-            result=result*10+arrayOfNumbers.get(index);
-            arrayOfNumbers.remove(index);
-        }
-        return result;
-    }
+
 
     private class MutableInt{
         private int value;
