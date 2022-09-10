@@ -23,7 +23,8 @@
       <tr th:each="player, iter: ${players}">
         <td th:utext="${iter.index}+1">№</td>
         <td th:utext="${player.login}">Player</td>
-        <td th:utext="${player.rating}">Score</td>
+        <td th:if="${player.games.size()!=0 and player.games.get(0).bullsNumber==4}"><a th:utext="${player.rating}">Score</a></td>
+        <td th:if="${player.games.size()==0 or player.games.get(0).bullsNumber!=4}">Not played</td>
       </tr>
       </tbody>
     </table>

@@ -157,4 +157,8 @@ public class Player implements UserDetails, CredentialsContainer {
         }
         return null;
     }
+
+    public void addGame(Game game){
+        games.add(game);
+    }
 }

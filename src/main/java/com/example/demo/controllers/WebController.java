@@ -43,6 +43,7 @@ public class WebController {
         }
         player.setId(UUID.randomUUID());
         player.setGames(new ArrayList<>());
+        player.setRating(Double.POSITIVE_INFINITY);
         playerService.save(player);
         return "login";
     }
@@ -50,6 +51,7 @@ public class WebController {
     @GetMapping("/list_of_games")
     public String allGames(Model model){
         Player player = (Player)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        player = playerService.findById(player.getId());
         model.addAttribute("player", player);
         return "list_of_games";
     }
@@ -65,7 +67,6 @@ public class WebController {
     }
 
     @GetMapping("/new_game")
-    //TODO: swap hidden num in game
     public String newGame(@RequestParam("player") UUID uuid, Model model){
         Player player = playerService.findById(uuid);
         model.addAttribute("player", player);
@@ -73,9 +74,10 @@ public class WebController {
         model.addAttribute("value", value);
         Game game = player.findNotEndedGame();
         if (game == null) {
-            game = new Game(UUID.randomUUID(), 7328, 0, 0, 0, playerService.findById(uuid));
-            //Game game = new Game(0, 0, 0, playerService.findById(uuid));
+            //game = new Game(UUID.randomUUID(), 7328, 0, 0, 0, playerService.findById(uuid));
+            game = new Game(0, 0, 0, playerService.findById(uuid));
             gameService.save(game);
+            player.addGame(game);
         }
         model.addAttribute("game", game);
         return "game";
