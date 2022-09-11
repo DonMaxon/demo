@@ -1,7 +1,9 @@
 package com.example.demo.controllers;
 
+import com.example.demo.entity.Attempt;
 import com.example.demo.entity.Game;
 import com.example.demo.entity.Player;
+import com.example.demo.services.AttemptsService;
 import com.example.demo.services.GameService;
 import com.example.demo.services.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,9 @@ public class WebController {
 
     @Autowired
     PlayerService playerService;
+
+    @Autowired
+    AttemptsService attemptsService;
 
     @GetMapping("/")
     public String login(Model model) {
@@ -75,7 +80,7 @@ public class WebController {
         Game game = player.findNotEndedGame();
         if (game == null) {
             //game = new Game(UUID.randomUUID(), 7328, 0, 0, 0, playerService.findById(uuid));
-            game = new Game(0, 0, 0, playerService.findById(uuid));
+            game = new Game(playerService.findById(uuid));
             gameService.save(game);
             player.addGame(game);
         }
@@ -89,10 +94,11 @@ public class WebController {
         Player player = playerService.findById(uuid);
         Game game = player.findNotEndedGame();
         model.addAttribute("player", player);
-        game.setAttemptsNumber(game.getAttemptsNumber()+1);
+
         if (value.getValue()==game.getHiddenNumber()){
-            game.setBullsNumber(4);
-            game.setCowsNumber(0);
+            Attempt attempt = new Attempt(value.value, 4, 0, game);
+            game.setOver(true);
+            game.addAttempt(attempt);
             gameService.save(game);
             player.setRating(player.newScore());
             playerService.save(player);
@@ -100,11 +106,14 @@ public class WebController {
         }
         else{
             if (value.value>999 && value.value<10000) {
-                gameService.save(game);
                 Pair<Integer, Integer> numOfBullsAndCows = game.compareAnswerWithResult(game.getHiddenNumber(), value.value);
-                game.setCowsNumber(numOfBullsAndCows.getSecond());
-                game.setBullsNumber(numOfBullsAndCows.getFirst());
+                Attempt attempt = new Attempt(value.value, numOfBullsAndCows.getSecond(), numOfBullsAndCows.getFirst(), game);
+                game.addAttempt(attempt);
+                gameService.save(game);
+                Player player2 = playerService.findById(uuid);
+                System.out.println(player2.toString());
             }
+
             model.addAttribute("game", game);
             model.addAttribute("player", player);
             model.addAttribute("value", value);

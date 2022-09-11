@@ -23,7 +23,7 @@ public class Player implements UserDetails, CredentialsContainer {
     @Column(nullable = false)
     private double rating;
 
-    @OneToMany(mappedBy = "player",  cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "player",  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Game> games;
 
     public Player() {
@@ -151,7 +151,7 @@ public class Player implements UserDetails, CredentialsContainer {
 
     public Game findNotEndedGame(){
         for (int i =0; i < games.size(); ++i){
-            if (games.get(i).getBullsNumber()!=4){
+            if (games.get(i).isOver()==false){
                 return games.get(i);
             }
         }

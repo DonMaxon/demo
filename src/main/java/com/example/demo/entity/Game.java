@@ -3,10 +3,7 @@ package com.example.demo.entity;
 import org.springframework.data.util.Pair;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table(name = "Game")
@@ -19,38 +16,35 @@ public class Game {
     private int hiddenNumber;
 
     @Column(nullable = false)
-    private int attemptsNumber;
-
-    @Column(nullable = false)
-    private int cowsNumber;
-
-    @Column(nullable = false)
-    private int bullsNumber;
+    private boolean isOver;
 
     @JoinColumn(name = "player")
     @ManyToOne
     private Player player;
 
+    @OneToMany(mappedBy = "game",  cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Attempt> attempts;
+
     public Game() {
+        this.id=UUID.randomUUID();
+        isOver=false;
+        attempts=new ArrayList<>(0);
     }
 
-    public Game(int attemptsNumber, int cowsNumber, int bullsNumber, Player player) {
+    public Game(Player player) {
         this.id=UUID.randomUUID();
         this.hiddenNumber = generateHiddenNumber();
-        this.attemptsNumber = attemptsNumber;
-        this.cowsNumber = cowsNumber;
-        this.bullsNumber = bullsNumber;
+        this.isOver=false;
         this.player = player;
+        attempts=new ArrayList<>(0);
     }
 
-    public Game(UUID id, int hiddenNumber, int attemptsNumber, int cowsNumber,
-                int bullsNumber, Player player) {
+    public Game(UUID id, int hiddenNumber, Player player) {
         this.id = id;
         this.hiddenNumber = hiddenNumber;
-        this.attemptsNumber = attemptsNumber;
-        this.cowsNumber = cowsNumber;
-        this.bullsNumber = bullsNumber;
+        this.isOver=false;
         this.player = player;
+        attempts=new ArrayList<>(0);
     }
 
     public Game(UUID id) {
@@ -74,27 +68,8 @@ public class Game {
     }
 
     public int getAttemptsNumber() {
-        return attemptsNumber;
-    }
-
-    public void setAttemptsNumber(int attemptsNumber) {
-        this.attemptsNumber = attemptsNumber;
-    }
-
-    public int getCowsNumber() {
-        return cowsNumber;
-    }
-
-    public void setCowsNumber(int cowsNumber) {
-        this.cowsNumber = cowsNumber;
-    }
-
-    public int getBullsNumber() {
-        return bullsNumber;
-    }
-
-    public void setBullsNumber(int bullsNumber) {
-        this.bullsNumber = bullsNumber;
+        return
+                attempts.size();
     }
 
     public Player getPlayer() {
@@ -105,15 +80,47 @@ public class Game {
         this.player = player;
     }
 
+    public List<Attempt> getAttempts() {
+        return attempts;
+    }
+
+    public void setAttempts(List<Attempt> attempts) {
+        this.attempts = attempts;
+    }
+
+    public boolean isOver() {
+        return isOver;
+    }
+
+    public void setOver(boolean over) {
+        isOver = over;
+    }
+
+    public int getBullsNumber(){
+        if (attempts.size()>0) {
+            return attempts.get(attempts.size()-1).getBullsNumber();
+        }
+        else{
+            return 0;
+        }
+    }
+
+    public int getCowsNumber(){
+        if (attempts.size()>0) {
+            return attempts.get(attempts.size()-1).getCowsNumber();
+        }
+        else{
+            return 0;
+        }
+    }
+
     @Override
     public String toString() {
         return "Game{" +
                 "id=" + id +
                 ", hiddenNumber=" + hiddenNumber +
-                ", attemptsNumber=" + attemptsNumber +
-                ", cowsNumber=" + cowsNumber +
-                ", bullsNumber=" + bullsNumber +
-                ", player=" + player.getLogin() +
+                ", isOver=" + isOver +
+                ", player=" + player +
                 '}';
     }
 
@@ -122,12 +129,12 @@ public class Game {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Game game = (Game) o;
-        return hiddenNumber == game.hiddenNumber && attemptsNumber == game.attemptsNumber && cowsNumber == game.cowsNumber && bullsNumber == game.bullsNumber && Objects.equals(id, game.id) && Objects.equals(player, game.player);
+        return hiddenNumber == game.hiddenNumber && isOver == game.isOver && Objects.equals(id, game.id) && Objects.equals(player, game.player) && Objects.equals(attempts, game.attempts);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, hiddenNumber, attemptsNumber, cowsNumber, bullsNumber, player);
+        return Objects.hash(id, hiddenNumber, isOver, player, attempts);
     }
 
     private int generateHiddenNumber(){
@@ -162,5 +169,9 @@ public class Game {
             }
         }
         return Pair.of(bulls, cows);
+    }
+
+    public void addAttempt(Attempt attempt){
+        attempts.add(attempt);
     }
 }

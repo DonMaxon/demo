@@ -22,8 +22,8 @@
             <tbody>
             <tr th:each="game: ${player.games}">
                 <td th:utext="${game.attemptsNumber}">Number of attemts</td>
-                <td th:if="${game.bullsNumber==4}"><a th:utext="${game.hiddenNumber}">Hidden number</a></td>
-                <td th:if="${game.bullsNumber!=4}">Game isn't ended:)</td>
+                <td th:if="${game.over}"><a th:utext="${game.hiddenNumber}">Hidden number</a></td>
+                <td th:if="${!game.over}">Game isn't ended:)</td>
             </tr>
             </tbody>
         </table>
