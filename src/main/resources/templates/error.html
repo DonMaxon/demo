@@ -3,32 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>404</title>
-  <style th:inline="css">
-    body {
-      background-image: url('https://http.cat/[[${errorCode}]]');
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-      background-position: 50% 50%;
-    }
-    html, body {
-      height: 100%;
-    }
-
-    html {
-      display: table;
-      margin: auto;
-
-    }
-
-    body {
-      display: table-cell;
-      vertical-align: top;
-      font-size: xxx-large;
-    }
-  </style>
 </head>
 <body>
 <a href="/login">Return to main page</a>
-<p th:text="${message}"></p>
 </body>
 </html>
