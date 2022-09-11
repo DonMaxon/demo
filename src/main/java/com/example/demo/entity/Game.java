@@ -22,7 +22,7 @@ public class Game {
     @ManyToOne
     private Player player;
 
-    @OneToMany(mappedBy = "game",  cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "game",  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Attempt> attempts;
 
     public Game() {
