@@ -123,6 +123,14 @@ public class WebController {
     }
 
 
+    @GetMapping("/attempts")
+    public String attempt(@RequestParam("player") UUID uuid, Model model){
+        Player player = playerService.findById(uuid);
+        Game game = player.findNotEndedGame();
+        model.addAttribute("player", player);
+        model.addAttribute("game", game);
+        return "attempts";
+    }
 
     private class MutableInt{
         private int value;
